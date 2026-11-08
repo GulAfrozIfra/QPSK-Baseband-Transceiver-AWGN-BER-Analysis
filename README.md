@@ -1,163 +1,172 @@
+# QPSK Baseband Transceiver
 
-# QPSK Baseband Transceiver: AWGN and BER Analysis
+**AWGN Channel Modelling and Bit Error Rate (BER) Performance Analysis**
+
+MATLAB implementation of a QPSK baseband transceiver with AWGN channel simulation and BER evaluation against theory.
+
+---
+
+## Table of Contents
+
+1. [Overview](#overview)
+2. [Objectives](#objectives)
+3. [System Architecture](#system-architecture)
+4. [Theoretical Background](#theoretical-background)
+5. [Simulation Methodology](#simulation-methodology)
+6. [Results and Analysis](#results-and-analysis)
+7. [Tools](#tools)
+8. [Repository Structure](#repository-structure)
+9. [Applications](#applications)
+10. [Future Scope](#future-scope)
+
+---
 
 ## Overview
 
-This project focuses on the design and simulation of a Quadrature Phase Shift Keying (QPSK) baseband communication system over an Additive White Gaussian Noise (AWGN) channel.
+This project presents the design and simulation of a Quadrature Phase Shift Keying (QPSK) baseband transceiver operating over an Additive White Gaussian Noise (AWGN) channel.
 
-The primary objective is to understand the performance of a digital communication system by analysing the relationship between Signal-to-Noise Ratio (SNR) and Bit Error Rate (BER).
-
-The project implements the fundamental stages of a digital communication transceiver, including bit generation, QPSK modulation, AWGN channel modelling, demodulation, and BER calculation.
+The system implements QPSK modulation and demodulation, channel noise modelling, and Bit Error Rate (BER) evaluation. The focus is to investigate how channel noise affects the reliability of digital data transmission and to analyse the relationship between signal-to-noise ratio and BER.
 
 ## Objectives
 
-- Design a QPSK baseband transmitter and receiver.
-- Understand the principles of digital phase modulation.
-- Simulate signal transmission through an AWGN channel.
-- Investigate the impact of noise on communication reliability.
-- Calculate BER at different SNR levels.
-- Analyse the simulated BER performance against theoretical expectations.
+- Design and implement a QPSK-based digital communication system.
+- Develop a baseband transmitter and receiver architecture.
+- Model an AWGN communication channel.
+- Evaluate system performance under varying noise conditions.
+- Calculate and analyse the Bit Error Rate.
+- Compare simulated BER with theoretical results.
+
+---
 
 ## System Architecture
 
-The communication system consists of the following functional blocks:
-
-```text
-     Random Bit Generation
-              |
-              v
-        QPSK Modulator
-              |
-              v
-       AWGN Channel
-              |
-              v
-        QPSK Demodulator
-              |
-              v
-      Recovered Bit Stream
-              |
-              v
-         BER Analysis
+```mermaid
+flowchart TD
+    A["Random Binary Data Generation"] --> B["Serial-to-Parallel Conversion"]
+    B --> C["QPSK Symbol Mapping"]
+    C --> D["QPSK Modulator"]
+    D --> E["AWGN Channel"]
+    E --> F["QPSK Demodulator"]
+    F --> G["Symbol Demapping"]
+    G --> H["Parallel-to-Serial Conversion"]
+    H --> I["Recovered Binary Data"]
+    A --> J["Reference Data"]
+    I --> K["BER Calculation"]
+    J --> K
+    K --> L["BER vs SNR Analysis"]
 ```
+
+| Functional Block | Description |
+|---|---|
+| Bit Generation | Generates a random binary information sequence |
+| Serial-to-Parallel | Groups incoming bits into pairs |
+| QPSK Modulator | Maps bit pairs to four distinct phase states |
+| AWGN Channel | Adds Gaussian noise to the transmitted signal |
+| QPSK Demodulator | Recovers transmitted symbols from the received signal |
+| Symbol Demapping | Converts detected symbols back into binary data |
+| BER Calculation | Counts incorrectly received bits |
+| Performance Analysis | Evaluates BER across SNR values |
+
+---
 
 ## Theoretical Background
 
-### 1. Quadrature Phase Shift Keying (QPSK)
+### Quadrature Phase Shift Keying
 
-QPSK is a digital modulation technique that transmits two bits per symbol by representing information through four distinct carrier phase states.
+QPSK represents binary information using four distinct carrier phase states. Each symbol carries two bits, giving higher spectral efficiency than BPSK.
 
-Each symbol represents one of four possible phase values, allowing QPSK to transmit twice as many bits per symbol as Binary Phase Shift Keying (BPSK).
+### Additive White Gaussian Noise
 
-### 2. Additive White Gaussian Noise (AWGN)
+The received signal is modelled as:
 
-An AWGN channel is a mathematical model used to represent the effect of random noise on a transmitted signal.
+<p align="center"><i>r</i>(<i>t</i>) = <i>s</i>(<i>t</i>) + <i>n</i>(<i>t</i>)</p>
 
-The received signal can be represented as:
+where <i>r</i>(<i>t</i>) is the received signal, <i>s</i>(<i>t</i>) is the transmitted signal, and <i>n</i>(<i>t</i>) is additive white Gaussian noise.
 
-r(t) = s(t) + n(t)
+### Signal-to-Noise Ratio
 
-Where:
+<p align="center">SNR = <i>P</i><sub>s</sub> / <i>P</i><sub>n</sub></p>
 
-- r(t) = Received signal
-- s(t) = Transmitted signal
-- n(t) = Additive White Gaussian Noise
+where <i>P</i><sub>s</sub> is the signal power and <i>P</i><sub>n</sub> is the noise power.
 
-### 3. Bit Error Rate (BER)
+### Bit Error Rate
 
-BER measures the proportion of incorrectly received bits compared to the total number of transmitted bits.
+<p align="center">BER = <i>N</i><sub>error</sub> / <i>N</i><sub>total</sub></p>
 
-BER = Number of Incorrectly Received Bits / Total Transmitted Bits
+where <i>N</i><sub>error</sub> is the number of incorrectly received bits and <i>N</i><sub>total</sub> is the total number of transmitted bits.
 
-A lower BER indicates better communication system performance.
+### Theoretical QPSK Performance
 
-### 4. Signal-to-Noise Ratio (SNR)
+For coherent QPSK with Gray coding over an AWGN channel:
 
-SNR represents the ratio of signal power to noise power.
+<p align="center">BER = <i>Q</i>( &radic;( 2<i>E</i><sub>b</sub> / <i>N</i><sub>0</sub> ) )</p>
 
-An increase in SNR generally results in reduced noise interference and improved BER performance.
+where <i>E</i><sub>b</sub> is the energy per bit, <i>N</i><sub>0</sub> is the noise power spectral density, and <i>Q</i>(<i>x</i>) is the Gaussian Q-function. This expression serves as the reference for validating the simulation.
+
+---
 
 ## Simulation Methodology
 
-The simulation follows these main stages:
+| Stage | Description |
+|---|---|
+| 1. Data Generation | Generate a random binary information sequence |
+| 2. Modulation | Convert binary data into QPSK symbols using phase mapping |
+| 3. Channel Modelling | Transmit symbols through an AWGN channel at different SNR values |
+| 4. Demodulation | Recover information from the noisy received signal |
+| 5. BER Computation | Compare transmitted and recovered sequences to count bit errors |
+| 6. Performance Evaluation | Analyse BER versus SNR and compare with theory |
 
-1. Generate a random binary data sequence.
-2. Group binary data into pairs for QPSK symbol mapping.
-3. Modulate the binary data using QPSK.
-4. Transmit the modulated signal through an AWGN channel.
-5. Demodulate the received signal.
-6. Compare transmitted and received binary sequences.
-7. Calculate BER for different SNR values.
-8. Analyse the BER performance.
+---
 
-## Performance Analysis
+## Results and Analysis
 
-The performance of the QPSK transceiver is evaluated by observing BER variations across different SNR levels.
+As SNR increases, the influence of noise decreases and the probability of bit errors falls. The simulated BER curve is compared against the theoretical QPSK curve to assess the accuracy of the implemented model.
 
-The simulated results can be compared with theoretical QPSK performance to assess the accuracy of the implementation.
+<p align="center">
+  <img src="Results/BER_vs_SNR.png" alt="QPSK BER versus SNR" width="75%" />
+</p>
 
-For coherent QPSK over an AWGN channel with Gray coding, the theoretical BER is:
+---
 
-Pb = Q(sqrt(2Eb/N0))
+## Tools
 
-Where:
+| Tool | Application |
+|---|---|
+| MATLAB | System modelling and simulation |
 
-- Pb = Probability of bit error
-- Eb = Energy per bit
-- N0 = Noise power spectral density
-- Q(.) = Gaussian Q-function
-
-## Technologies and Tools
-
-- MATLAB
-- Digital Signal Processing
-- Digital Communication Systems
-- QPSK Modulation and Demodulation
-- AWGN Channel Modelling
-- BER and SNR Analysis
+---
 
 ## Repository Structure
 
 ```text
 QPSK-Baseband-Transceiver-AWGN-BER-Analysis/
-│
 ├── README.md
-│
 ├── MATLAB/
-│   └── [Simulation Files]
-│
+│   └── QPSK_Transceiver.m
 ├── Results/
-│   └── [BER Performance Plots]
-│
+│   └── BER_vs_SNR.png
 └── Documentation/
-    └── [Project Documentation]
+    └── Project_Report.pdf
 ```
-
-## Applications
-
-QPSK modulation is widely used in:
-
-- Satellite communication systems
-- Wireless communication networks
-- Digital radio communication
-- Space communication systems
-- Modern digital transmission systems
-
-## Conclusion
-
-This project demonstrates the fundamental operation and performance evaluation of a QPSK baseband communication system under AWGN channel conditions.
-
-By analysing BER against SNR, the project provides insight into the relationship between channel noise and digital communication reliability.
-
-## Author
-
-**Gul Afroz Ifra Khan**
-
-BS Avionics Engineering  
-Institute of Space Technology (IST)
-
-GitHub: https://github.com/GulAfrozIfra
 
 ---
 
-*This repository is intended for educational, academic, and engineering research purposes.*
+## Applications
+
+- Satellite communication systems
+- Aerospace and aviation communication
+- Digital radio communication
+- Wireless communication networks
+- Space communication systems
+- Digital broadcasting
+
+---
+
+## Future Scope
+
+- Performance comparison of BPSK, QPSK, 8-PSK and QAM
+- Rayleigh and Rician fading channels
+- Constellation diagram analysis
+- Channel coding techniques
+- Higher-order modulation schemes
+- Simulation of practical communication impairments
